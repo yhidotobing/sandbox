@@ -88,7 +88,7 @@
               />
             </div>
             <div class="form-group">
-              <label for="description">Kategori Buku</label>
+              <label for="kategori">Kategori Buku</label>
               <select name="kategori" id="kategori"></select>
             </div>
           </div>
@@ -156,8 +156,8 @@
       };
       const postBook = async () => {
         const payload = {
-          name: data,
-          type_books_id: data,
+          name: $("#name").val(),
+          type_books_id: $("#kategori").val(),
         };
         try {
           const request = await axios.post(API, payload);
@@ -167,12 +167,13 @@
           apiCategory.forEach((data, i) => {
             listCategory += `<option value="${type_books_id}">${data.name}</option>`;
           });
-          $("#kateogri").html(listCategory);
+
           $("#exampleModal").modal("hide");
           Swal.fire({
             text: request.data.msg,
             icon: "success",
           });
+          $("#kateogri").html(listCategory);
         } catch (error) {
           console.log(error);
         }
