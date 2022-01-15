@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Belajar API</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+      integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn"
+      crossorigin="anonymous"
+    />
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+      integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"
+      integrity="sha512-u9akINsQsAkG9xjc1cnGF4zw5TFDwkxuc9vUp5dltDWYCSmyd0meygbvgXrlc/z7/o4a19Fb5V0OUE58J7dcyw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-light bg-light">
+      <span class="navbar-brand mb-0 h1">Buku</span>
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-toggle="modal"
+        data-target="#exampleModal"
+      >
+        Tambah Buku
+      </button>
+    </nav>
+    <div class="container">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nama</th>
+            <th scope="col">Kategory</th>
+            <th scope="col">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="list-book"></tbody>
+      </table>
+    </div>
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Tambah Buku</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="name">Nama Buku</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                placeholder="Fullstack 6"
+              />
+            </div>
+            <div class="form-group">
+              <label for="description">Kategori Buku</label>
+              <select name="kategori" id="kategori"></select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-primary" onclick="postBook()">
+              Save changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const API = "https://mybook-order.herokuapp.com/books";
+      const apiCategory = "https://mybook-order.herokuapp.com/books/type";
+      const getBook = async () => {
+        try {
+          const request = await axios.get(API);
+          const requestCategory = await axios.get(apiCategory);
+          console.log(request);
+          const listBook = request.data.data;
+          const listCategory = request.data.data;
+          let listHtml = "";
+          listBook.forEach((data, i) => {
+            listHtml += `
+                                <tr>
+                                    <th scope="row">${i + 1}</th>
+                                    <td>${data.name}</td>
+                                    <td>${data.type_book.name}</td>
+                                    <td><button type="button" class="btn btn-danger" onclick="deleteBook(${
+                                      data.id
+                                    })">Delete</button></td>
+                                </tr>
+                                `;
+          });
+          $("#list-book").html(listHtml);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      const deleteBook = async (idBook) => {
+        try {
+          const res = await axios.delete(API, {
+            data: { id: idBook },
+          });
+          alert("Success");
+          //   const request = await axios.delete(API + "/" + idBook);
+          //   console.log(request);
+          //   alert(request.data.msg);
+          //   // Cara Kedua
+          //   Swal.fire({
+          //     text: request.data.msg,
+          //     icon: "success",
+          //   });
+          getBook();
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      const postBook = async () => {
+        const payload = {
+          name: data,
+          type_books_id: data,
+        };
+        try {
+          const request = await axios.post(API, payload);
+          alert(request.data.msg);
+          getBook();
+          let listCategory = "";
+          apiCategory.forEach((data, i) => {
+            listCategory += `<option value="${type_books_id}">${data.name}</option>`;
+          });
+          $("#kateogri").html(listCategory);
+          $("#exampleModal").modal("hide");
+          Swal.fire({
+            text: request.data.msg,
+            icon: "success",
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      getBook();
+      // running every 5 second
+      // setInterval(function () {
+      //     getClass()
+      // }, 5000);
+    </script>
+  </body>
+</html>
